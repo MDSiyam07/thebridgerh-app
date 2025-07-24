@@ -5,6 +5,8 @@ export interface Candidate {
   email: string
   linkedinUrl?: string
   cvFileName?: string
+  cvUrl?: string
+  cvPublicId?: string
   skills: string
   position: string
   status: Status
@@ -22,6 +24,8 @@ export interface CreateCandidateData {
   email: string
   linkedinUrl?: string
   cvFileName?: string
+  cvUrl?: string
+  cvPublicId?: string
   skills: string
   position: string
 }

@@ -81,10 +81,21 @@ export default function CandidateCard({ candidate, onUpdate }: CandidateCardProp
           </div>
         )}
         
-        {candidate.cvFileName && (
+        {(candidate.cvFileName || candidate.cvUrl) && (
           <div>
             <span className="text-sm font-medium text-white">CV:</span>
-            <span className="text-dark-200 ml-2">{candidate.cvFileName}</span>
+            {candidate.cvUrl ? (
+              <a 
+                href={candidate.cvUrl} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-accent hover:underline ml-2"
+              >
+                {candidate.cvFileName || 'Voir le CV'}
+              </a>
+            ) : (
+              <span className="text-dark-200 ml-2">{candidate.cvFileName}</span>
+            )}
           </div>
         )}
 

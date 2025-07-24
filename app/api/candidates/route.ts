@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { writeFile } from 'fs/promises'
-import { join } from 'path'
 
 // SendGrid est optionnel
 let sendGridService: any = null
@@ -10,6 +8,15 @@ try {
   sendGridService = new SendGridService()
 } catch (error) {
   console.log('SendGrid non configuré - les emails ne seront pas envoyés')
+}
+
+// Cloudinary est optionnel
+let cloudinaryService: any = null
+try {
+  const { CloudinaryService } = await import('@/lib/cloudinary')
+  cloudinaryService = CloudinaryService
+} catch (error) {
+  console.log('Cloudinary non configuré - les fichiers ne seront pas uploadés')
 }
 
 export async function GET(request: NextRequest) {
@@ -65,17 +72,29 @@ export async function POST(request: NextRequest) {
     }
 
     let cvFileName: string | undefined
-    let cvFilePath: string | undefined
+    let cvUrl: string | undefined
+    let cvPublicId: string | undefined
 
-    // Handle file upload (disabled on Vercel)
-    if (cvFile) {
-      // On Vercel, we can't write files to the filesystem
-      // So we just store the filename for reference
-      const timestamp = Date.now()
-      const originalName = cvFile.name
-      cvFileName = `${timestamp}-${originalName}`
-      
-      console.log('File upload disabled on Vercel - filename stored:', cvFileName)
+    // Handle file upload with Cloudinary
+    if (cvFile && cloudinaryService) {
+      try {
+        console.log('Uploading file to Cloudinary:', cvFile.name)
+        const uploadResult = await cloudinaryService.uploadFile(cvFile, 'cv')
+        
+        cvFileName = cvFile.name
+        cvUrl = uploadResult.secureUrl
+        cvPublicId = uploadResult.publicId
+        
+        console.log('File uploaded successfully to Cloudinary:', cvUrl)
+      } catch (uploadError) {
+        console.error('Cloudinary upload failed:', uploadError)
+        // Continue without file upload
+        cvFileName = cvFile.name
+      }
+    } else if (cvFile) {
+      // Fallback: just store filename if Cloudinary not configured
+      cvFileName = cvFile.name
+      console.log('Cloudinary not configured - storing filename only:', cvFileName)
     }
 
     console.log('Attempting to create candidate in database...')
@@ -90,6 +109,8 @@ export async function POST(request: NextRequest) {
           email,
           linkedinUrl: linkedinUrl || null,
           cvFileName: cvFileName || null,
+          cvUrl: cvUrl || null,
+          cvPublicId: cvPublicId || null,
           skills,
           position,
         },

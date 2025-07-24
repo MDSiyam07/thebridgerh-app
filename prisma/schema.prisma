@@ -25,6 +25,8 @@ model Candidate {
   email         String   @unique
   linkedinUrl   String?
   cvFileName    String?
+  cvUrl         String?
+  cvPublicId    String?
   skills        String
   position      String
   status        Status   @default(PENDING)
