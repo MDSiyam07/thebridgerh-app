@@ -40,8 +40,10 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  console.log('POST /api/candidates - Starting request')
   try {
     const formData = await request.formData()
+    console.log('FormData received successfully')
     
     const firstName = formData.get('firstName') as string
     const lastName = formData.get('lastName') as string
@@ -51,8 +53,11 @@ export async function POST(request: NextRequest) {
     const position = formData.get('position') as string
     const cvFile = formData.get('cvFile') as File | null
 
+    console.log('Form data extracted:', { firstName, lastName, email, position, skills })
+
     // Validation
     if (!firstName || !lastName || !email || !skills || !position) {
+      console.log('Validation failed - missing required fields')
       return NextResponse.json(
         { error: 'Tous les champs obligatoires doivent être remplis' },
         { status: 400 }
@@ -73,6 +78,8 @@ export async function POST(request: NextRequest) {
       console.log('File upload disabled on Vercel - filename stored:', cvFileName)
     }
 
+    console.log('Attempting to create candidate in database...')
+    
     // Create candidate in database
     let candidate
     try {
@@ -87,10 +94,11 @@ export async function POST(request: NextRequest) {
           position,
         },
       })
+      console.log('Candidate created successfully:', candidate.id)
     } catch (dbError) {
       console.error('Database error:', dbError)
       return NextResponse.json(
-        { error: 'Erreur lors de la sauvegarde en base de données' },
+        { error: 'Erreur lors de la sauvegarde en base de données', details: dbError instanceof Error ? dbError.message : 'Unknown error' },
         { status: 500 }
       )
     }
@@ -120,14 +128,15 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    console.log('Sending success response')
     return NextResponse.json(
       { message: 'Candidature envoyée avec succès', candidate },
       { status: 201 }
     )
   } catch (error) {
-    console.error('Error creating candidate:', error)
+    console.error('Unexpected error in POST /api/candidates:', error)
     return NextResponse.json(
-      { error: 'Erreur lors de la création de la candidature' },
+      { error: 'Erreur lors de la création de la candidature', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
   }
