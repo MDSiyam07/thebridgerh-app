@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
     // Handle file upload with Cloudinary
     if (cvFile && cloudinaryService) {
       try {
-        console.log('Uploading file to Cloudinary:', cvFile.name)
+        console.log('Uploading file to Cloudinary:', cvFile.name, 'Size:', cvFile.size, 'Type:', cvFile.type)
         const uploadResult = await cloudinaryService.uploadFile(cvFile, 'cv')
         
         cvFileName = cvFile.name
@@ -86,15 +86,19 @@ export async function POST(request: NextRequest) {
         cvPublicId = uploadResult.publicId
         
         console.log('File uploaded successfully to Cloudinary:', cvUrl)
+        console.log('Public ID:', cvPublicId)
       } catch (uploadError) {
         console.error('Cloudinary upload failed:', uploadError)
         // Continue without file upload
         cvFileName = cvFile.name
+        console.log('Continuing without file upload, filename stored:', cvFileName)
       }
     } else if (cvFile) {
       // Fallback: just store filename if Cloudinary not configured
       cvFileName = cvFile.name
       console.log('Cloudinary not configured - storing filename only:', cvFileName)
+    } else {
+      console.log('No file uploaded')
     }
 
     console.log('Attempting to create candidate in database...')
@@ -124,9 +128,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Send emails (optional)
+    // Send emails (optional) - DISABLED FOR DEBUGGING
+    console.log('SendGrid disabled for debugging - skipping emails')
+    /*
     if (sendGridService) {
       try {
+        console.log('Sending confirmation email to candidate...')
         // Email de confirmation au candidat
         await sendGridService.sendCandidateConfirmation({
           firstName,
@@ -134,7 +141,9 @@ export async function POST(request: NextRequest) {
           email,
           position,
         })
+        console.log('Confirmation email sent successfully')
 
+        console.log('Sending notification email to admin...')
         // Email de notification à l'admin
         await sendGridService.sendAdminNotification({
           firstName,
@@ -143,11 +152,15 @@ export async function POST(request: NextRequest) {
           position,
           skills,
         })
+        console.log('Admin notification email sent successfully')
       } catch (emailError) {
         console.error('Error sending email notifications:', emailError)
         // Don't fail the request if email fails
       }
+    } else {
+      console.log('SendGrid not configured - skipping emails')
     }
+    */
 
     console.log('Sending success response')
     return NextResponse.json(
