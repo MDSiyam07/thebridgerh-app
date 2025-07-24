@@ -87,7 +87,7 @@ export class SendGridService {
         <p>Connectez-vous à votre tableau de bord pour examiner cette candidature et prendre les prochaines étapes.</p>
         
         <p style="margin-top: 30px;">
-          <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin" 
+          <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://thebridgerh-app.vercel.app'}/admin" 
              style="background: #8D0000; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">
             Accéder au tableau de bord
           </a>

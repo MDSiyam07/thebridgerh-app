@@ -183,7 +183,7 @@ export default function CandidateCard({ candidate, onUpdate }: CandidateCardProp
         <div className="space-y-2">
           {candidate.comment && (
             <div className="bg-dark-500 p-3 rounded border border-dark-300">
-              <span className="text-sm font-medium text-white">Commentaire:</span>
+              <span className="text-sm font-medium text-white">Commentaires RH :</span>
               <p className="text-sm text-dark-200 mt-1">{candidate.comment}</p>
             </div>
           )}
