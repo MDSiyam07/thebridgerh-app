@@ -62,44 +62,38 @@ export async function POST(request: NextRequest) {
     let cvFileName: string | undefined
     let cvFilePath: string | undefined
 
-    // Handle file upload
+    // Handle file upload (disabled on Vercel)
     if (cvFile) {
-      const bytes = await cvFile.arrayBuffer()
-      const buffer = Buffer.from(bytes)
-      
-      // Create unique filename
+      // On Vercel, we can't write files to the filesystem
+      // So we just store the filename for reference
       const timestamp = Date.now()
       const originalName = cvFile.name
-      const extension = originalName.split('.').pop()
       cvFileName = `${timestamp}-${originalName}`
       
-      // Save file to public/uploads directory
-      const uploadsDir = join(process.cwd(), 'public', 'uploads')
-      cvFilePath = join(uploadsDir, cvFileName)
-      
-      try {
-        await writeFile(cvFilePath, buffer)
-      } catch (error) {
-        console.error('Error saving file:', error)
-        return NextResponse.json(
-          { error: 'Erreur lors du téléchargement du fichier' },
-          { status: 500 }
-        )
-      }
+      console.log('File upload disabled on Vercel - filename stored:', cvFileName)
     }
 
     // Create candidate in database
-    const candidate = await prisma.candidate.create({
-      data: {
-        firstName,
-        lastName,
-        email,
-        linkedinUrl: linkedinUrl || null,
-        cvFileName: cvFileName || null,
-        skills,
-        position,
-      },
-    })
+    let candidate
+    try {
+      candidate = await prisma.candidate.create({
+        data: {
+          firstName,
+          lastName,
+          email,
+          linkedinUrl: linkedinUrl || null,
+          cvFileName: cvFileName || null,
+          skills,
+          position,
+        },
+      })
+    } catch (dbError) {
+      console.error('Database error:', dbError)
+      return NextResponse.json(
+        { error: 'Erreur lors de la sauvegarde en base de données' },
+        { status: 500 }
+      )
+    }
 
     // Send emails (optional)
     if (sendGridService) {
