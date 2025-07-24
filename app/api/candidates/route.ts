@@ -160,9 +160,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Send emails (optional) - DISABLED FOR DEBUGGING
-    console.log('SendGrid disabled for debugging - skipping emails')
-    /*
+    // Send emails (optional)
     if (sendGridService) {
       try {
         console.log('Sending confirmation email to candidate...')
@@ -192,7 +190,6 @@ export async function POST(request: NextRequest) {
     } else {
       console.log('SendGrid not configured - skipping emails')
     }
-    */
 
     console.log('Sending success response')
     return NextResponse.json(

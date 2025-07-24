@@ -101,7 +101,17 @@ export default function CandidateCard({ candidate, onUpdate }: CandidateCardProp
 
         <div>
           <span className="text-sm font-medium text-white">Compétences:</span>
-          <p className="text-sm text-dark-200 mt-1">{candidate.skills}</p>
+          <p className="text-sm text-dark-200 mt-1">
+            {candidate.skills.split(',').map((skill, index) => {
+              const trimmedSkill = skill.trim()
+              const formattedSkill = trimmedSkill.charAt(0).toUpperCase() + trimmedSkill.slice(1).toLowerCase()
+              return (
+                <span key={index} className="inline-block bg-dark-500 px-2 py-1 rounded mr-2 mb-1">
+                  {formattedSkill}
+                </span>
+              )
+            })}
+          </p>
         </div>
 
         {candidate.interviewDate && (
@@ -134,7 +144,7 @@ export default function CandidateCard({ candidate, onUpdate }: CandidateCardProp
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white mb-1">Commentaire</label>
+            <label className="block text-sm font-medium text-white mb-1">Commentaires RH</label>
             <textarea
               value={editData.comment}
               onChange={(e) => setEditData(prev => ({ ...prev, comment: e.target.value }))}
