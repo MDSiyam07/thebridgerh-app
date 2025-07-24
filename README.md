@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TheBridgeRH – Mini application de gestion de candidatures
 
-## Getting Started
+## Objectif
 
-First, run the development server:
+Ce projet a été réalisé dans le cadre d’un exercice technique visant à développer une application web de gestion de candidatures techniques, avec un formulaire côté candidat et un tableau de bord côté RH.
+
+## Choix techniques
+
+### Pourquoi Next.js ?
+
+J’ai choisi **Next.js** pour les raisons suivantes :
+
+- **Basé sur React**, il respecte la stack suggérée dans l’énoncé.
+- Il permet de gérer à la fois le **frontend et le backend** dans un seul projet grâce aux **API Routes**.
+- Il simplifie le **routing**, la **gestion des formulaires**, et le **déploiement** (notamment sur Vercel).
+- Il offre une structure claire et évolutive, idéale pour un projet qui pourrait être enrichi (authentification, base de données, notifications, etc.).
+
+Ce choix me permet de livrer une application **fonctionnelle, maintenable et facilement déployable**, tout en respectant les fonctionnalités demandées.
+
+## Fonctionnalités implémentées
+
+- Formulaire de soumission de candidature (Prénom, Nom, Email, LinkedIn, CV, Compétences, Poste)
+- Tableau de bord RH avec :
+  - Liste des candidatures
+  - Filtres et tri
+  - Modification du statut
+  - Ajout de commentaires
+- Notifications en console lors d’une nouvelle candidature (bonus)
+
+## Stack utilisée
+
+- **Framework** : Next.js (React)
+- **Stockage** : Cloudinary pour les fichiers CV, Neon pour les candidats couplé à Prisma ORM
+- **Style** : Tailwind CSS (ou autre, selon choix)
+- **Déploiement** : Vercel
+
+## Lancer le projet
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
