@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { AuthService } from '@/lib/auth'
+import { AuthService } from '../../../../lib/auth'
 import { cookies } from 'next/headers'
 import { sign } from 'jsonwebtoken'
 
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     // Create a simple session token
     const token = sign(
       { username, role: 'admin' },
-      process.env.NEXTAUTH_SECRET || 'fallback-secret',
+      process.env.JWT_SECRET || 'fallback-secret',
       { expiresIn: '24h' }
     )
 

@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { SendGridService } from '@/lib/sendgrid'
 import { writeFile } from 'fs/promises'
 import { join } from 'path'
 
-const sendGridService = new SendGridService()
+// SendGrid est optionnel
+let sendGridService: any = null
+try {
+  const { SendGridService } = await import('@/lib/sendgrid')
+  sendGridService = new SendGridService()
+} catch (error) {
+  console.log('SendGrid non configuré - les emails ne seront pas envoyés')
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -41,7 +47,6 @@ export async function POST(request: NextRequest) {
     const lastName = formData.get('lastName') as string
     const email = formData.get('email') as string
     const linkedinUrl = formData.get('linkedinUrl') as string
-    const cvUrl = formData.get('cvUrl') as string
     const skills = formData.get('skills') as string
     const position = formData.get('position') as string
     const cvFile = formData.get('cvFile') as File | null
@@ -90,25 +95,35 @@ export async function POST(request: NextRequest) {
         lastName,
         email,
         linkedinUrl: linkedinUrl || null,
-        cvUrl: cvUrl || null,
         cvFileName: cvFileName || null,
         skills,
         position,
       },
     })
 
-    // Send email notification
-    try {
-      await sendGridService.sendNewCandidateNotification({
-        firstName,
-        lastName,
-        email,
-        position,
-        skills,
-      })
-    } catch (emailError) {
-      console.error('Error sending email notification:', emailError)
-      // Don't fail the request if email fails
+    // Send emails (optional)
+    if (sendGridService) {
+      try {
+        // Email de confirmation au candidat
+        await sendGridService.sendCandidateConfirmation({
+          firstName,
+          lastName,
+          email,
+          position,
+        })
+
+        // Email de notification à l'admin
+        await sendGridService.sendAdminNotification({
+          firstName,
+          lastName,
+          email,
+          position,
+          skills,
+        })
+      } catch (emailError) {
+        console.error('Error sending email notifications:', emailError)
+        // Don't fail the request if email fails
+      }
     }
 
     return NextResponse.json(

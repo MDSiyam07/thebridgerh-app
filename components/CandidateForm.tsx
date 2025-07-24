@@ -1,9 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { CreateCandidateData } from '@/types'
 
 export default function CandidateForm() {
+  const router = useRouter()
   const [formData, setFormData] = useState<CreateCandidateData>({
     firstName: '',
     lastName: '',
@@ -75,7 +77,13 @@ export default function CandidateForm() {
       })
 
       if (response.ok) {
-        setMessage({ type: 'success', text: 'Candidature envoyée avec succès !' })
+        setMessage({ type: 'success', text: 'Candidature envoyée avec succès ! Redirection...' })
+        
+        // Redirection vers la page d'accueil après 2 secondes
+        setTimeout(() => {
+          router.push('/')
+        }, 2000)
+        
         setFormData({
           firstName: '',
           lastName: '',

@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-      const decoded = verify(token.value, process.env.NEXTAUTH_SECRET || 'fallback-secret') as any
+      const decoded = verify(token.value, process.env.JWT_SECRET || 'fallback-secret') as any
       
       if (decoded.role === 'admin') {
         return NextResponse.json({ authenticated: true })
