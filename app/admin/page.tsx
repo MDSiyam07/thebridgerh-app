@@ -237,6 +237,7 @@ function LoginForm({ onLogin }: { onLogin: () => void }) {
               id="username"
               value={credentials.username}
               onChange={(e) => setCredentials(prev => ({ ...prev, username: e.target.value }))}
+              placeholder="admin"
               required
               className="w-full px-3 py-2 border border-dark-300 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-accent bg-dark-500 text-white placeholder-dark-200"
             />
@@ -251,6 +252,7 @@ function LoginForm({ onLogin }: { onLogin: () => void }) {
               id="password"
               value={credentials.password}
               onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
+              placeholder="admin123"
               required
               className="w-full px-3 py-2 border border-dark-300 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-accent bg-dark-500 text-white placeholder-dark-200"
             />
