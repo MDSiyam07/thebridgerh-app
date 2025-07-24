@@ -95,7 +95,8 @@ export default function CandidateForm() {
         setCvFile(null)
       } else {
         const error = await response.json()
-        setMessage({ type: 'error', text: error.message || 'Erreur lors de l\'envoi' })
+        const errorMessage = error.message || error.error || 'Erreur lors de l\'envoi'
+        setMessage({ type: 'error', text: errorMessage })
       }
     } catch (error) {
       setMessage({ type: 'error', text: 'Erreur de connexion' })

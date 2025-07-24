@@ -106,6 +106,7 @@ export async function POST(request: NextRequest) {
     // Create candidate in database
     let candidate
     try {
+      // Essayer de créer un nouveau candidat
       candidate = await prisma.candidate.create({
         data: {
           firstName,
@@ -120,12 +121,43 @@ export async function POST(request: NextRequest) {
         },
       })
       console.log('Candidate created successfully:', candidate.id)
-    } catch (dbError) {
+    } catch (dbError: any) {
       console.error('Database error:', dbError)
-      return NextResponse.json(
-        { error: 'Erreur lors de la sauvegarde en base de données', details: dbError instanceof Error ? dbError.message : 'Unknown error' },
-        { status: 500 }
-      )
+      
+      // Gérer spécifiquement l'erreur de doublon d'email
+      if (dbError.code === 'P2002' && dbError.meta?.target?.includes('email')) {
+        console.log('Email already exists, updating existing candidate...')
+        
+        try {
+          // Mettre à jour le candidat existant
+          candidate = await prisma.candidate.update({
+            where: { email },
+            data: {
+              firstName,
+              lastName,
+              linkedinUrl: linkedinUrl || null,
+              cvFileName: cvFileName || null,
+              cvUrl: cvUrl || null,
+              cvPublicId: cvPublicId || null,
+              skills,
+              position,
+              updatedAt: new Date(),
+            },
+          })
+          console.log('Existing candidate updated successfully:', candidate.id)
+        } catch (updateError) {
+          console.error('Error updating existing candidate:', updateError)
+          return NextResponse.json(
+            { error: 'Erreur lors de la mise à jour de la candidature existante' },
+            { status: 500 }
+          )
+        }
+      } else {
+        return NextResponse.json(
+          { error: 'Erreur lors de la sauvegarde en base de données', details: dbError instanceof Error ? dbError.message : 'Unknown error' },
+          { status: 500 }
+        )
+      }
     }
 
     // Send emails (optional) - DISABLED FOR DEBUGGING
